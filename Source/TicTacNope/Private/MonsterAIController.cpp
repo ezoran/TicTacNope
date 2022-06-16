@@ -21,6 +21,8 @@ AMonsterAIController::AMonsterAIController()
 	AIPerceptionComponent->ConfigureSense(*SightConfig);
 
 	Character = Cast<AMonsterCharacter>(GetPawn());
+
+	bCanBegin = false;
 }
 
 void AMonsterAIController::BeginPlay()
@@ -41,26 +43,28 @@ void AMonsterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (TargetToChase != NULL)
+	if (bCanBegin)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Moving to player"));
-		MoveToActor(TargetToChase, 5.0f);
-	}
-	else if (MoveToCell != NULL && MoveToCell->CurrentState == CellStates::Empty)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Moving to cell"));
-		MoveToActor(MoveToCell, 5.0f);
-	}
-	else if(MoveToCell == NULL || MoveToCell->CurrentState != CellStates::Empty)
-	{
-		//don't have a cell target or a player chase target, grab the next best cell
-		GetNextCell();
+		if (TargetToChase != NULL)
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Moving to player"));
+			MoveToActor(TargetToChase, 5.0f);
+		}
+		else if (MoveToCell != NULL && MoveToCell->CurrentState == CellStates::Empty)
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Moving to cell"));
+			MoveToActor(MoveToCell, 5.0f);
+		}
+		else if (MoveToCell == NULL || MoveToCell->CurrentState != CellStates::Empty)
+		{
+			//don't have a cell target or a player chase target, grab the next best cell
+			GetNextCell();
+		}
 	}
 }
 
 void AMonsterAIController::OnPawnDetected(const TArray<AActor*>& UpdatedActors)
 {
-
 	int size = UpdatedActors.Num();
 
 	UE_LOG(LogTemp, Warning, TEXT("pawns detected: %d"), size);
@@ -70,6 +74,7 @@ void AMonsterAIController::OnPawnDetected(const TArray<AActor*>& UpdatedActors)
 		if(Actor->IsA<APlayerCharacter>())
 		{
 			TargetToChase = Cast<APlayerCharacter>(Actor);
+			Character->UpdateMonsterState(MonsterStates::ChasePlayer);
 		}
 	}
 }
@@ -83,86 +88,31 @@ void AMonsterAIController::GetNextCell()
 	if (gameState != NULL)
 	{
 		AGameBoard* b = gameState->Board;
-		
-		//first, check if we're starting with a fresh board, if so, pick a random starting point
-		bool boardIsEmpty = true;
 		TArray<int> potentialCellIndexes;
 
 		for (int i = 0; i < b->CurrentCells.Num(); i++)
 		{
-			if (b->CurrentCells[i]->CurrentState != CellStates::Empty)
+			if (b->CurrentCells[i]->CurrentState == CellStates::Empty)
 			{
-				boardIsEmpty = false;
-				return;
+	
+				potentialCellIndexes.Add(i);
 			}
 		}
 
-		if (boardIsEmpty)
-		{
-			MoveToCell = gameState->Board->CurrentCells[FMath::RandRange(0, b->CurrentCells.Num() - 1)];
-		}
-		else
-		{
-			//board not empty, commence with minimax selection
-			int bestScore = -1000;
-
-			for (int i = 0; i < b->CurrentCells.Num(); i++)
-			{
-				if (b->CurrentCells[i]->CurrentState == CellStates::Empty)
-				{
-					b->CurrentCells[i]->CurrentState = CellStates::MonsterOccupied;
-					int score = MiniMax(b, b->CurrentCells[i], 0, false);
-
-					if (score > bestScore)
-					{
-						bestScore = score;
-						potentialCellIndexes.Empty();
-					}
-					else if (score == bestScore)
-					{
-						potentialCellIndexes.Add(i);
-					}
-
-					b->CurrentCells[i]->CurrentState = CellStates::Empty;
-				}
-			}
-
-			int selectedIndex = potentialCellIndexes[FMath::RandRange(0, potentialCellIndexes.Num() - 1)];
-			MoveToCell = b->CurrentCells[selectedIndex];
-
-			UE_LOG(LogTemp, Warning, TEXT("Monster now moving to cell %d"), MoveToCell->CellId);
-		}
-
+		int selectedIndex = potentialCellIndexes[FMath::RandRange(0, potentialCellIndexes.Num() - 1)];
+		MoveToCell = b->CurrentCells[selectedIndex];
 	}
 	else
 	{
+		UE_LOG(LogTemp, Error, TEXT("ERROR: could not get next AI move, board was null in GetNextMoves()"));
+
 	}
 
 }
 
-/// <summary>
-/// Minimax implementation to determine next move, 
-/// I used the forum https://codereview.stackexchange.com/questions/268486/c-tic-tac-toe-ai-powered-by-minmax-algorithm
-/// to help with having a minimax that didn't win every time
-/// </summary>
-int AMonsterAIController::MiniMax(AGameBoard* board, ACell* cell, int Depth, bool IsMax)
+void AMonsterAIController::Reset()
 {
-	int score = 0;
-
-	//BoardStates state = b
-
-	return score;
+	bCanBegin = false;
+	MoveToCell = NULL;
+	TargetToChase = NULL;
 }
-
-
-
-
-//TESTING: pick the first available
-/*for (int i = 0; i < b->CurrentCells.Num(); i++)
-{
-	if (b->CurrentCells[i]->CurrentState == CellStates::Empty)
-	{
-		MoveToCell = gameState->Board->CurrentCells[i];
-		break;
-	}
-}*/

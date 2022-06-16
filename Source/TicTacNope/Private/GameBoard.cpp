@@ -12,6 +12,7 @@ void AGameBoard::BeginPlay()
 {
 	Super::BeginPlay();
 	FetchAllCells();
+	ResetBoard();
 }
 
 void AGameBoard::FetchAllCells()
@@ -70,24 +71,16 @@ BoardStates AGameBoard::GetBoardState(ACell* lastFilled)
 
 bool AGameBoard::CheckForDraw()
 {
-	int filledCount = 0;
-
 	for (int i = 0; i < CurrentCells.Num(); i++)
 	{
 		if (CurrentCells[i]->CurrentState != CellStates::Empty)
 		{
-			filledCount++;
+			return false;
 		}
 	}
 
-	if (filledCount == CurrentCells.Num())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+
+	return true;
 }
 
 bool AGameBoard::CheckForHorizontalWin(ACell* lastFilled)
@@ -152,4 +145,6 @@ void AGameBoard::ResetBoard()
 	{
 		CurrentCells[i]->CurrentState = CellStates::Empty;
 	}
+
+	bBoardIsEmpty = true;
 }

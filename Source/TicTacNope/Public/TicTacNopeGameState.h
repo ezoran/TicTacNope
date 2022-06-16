@@ -7,10 +7,6 @@
 #include "GameFramework/GameStateBase.h"
 #include "TicTacNopeGameState.generated.h"
 
-/**
- * 
- */
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStateModifiedSignature, const BoardStates&, State);
 
 UCLASS()
@@ -24,6 +20,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateBoardState(BoardStates InState);
+
+	UFUNCTION(BlueprintCallable)
+	void SetAiActivation(bool active);
 
 	UPROPERTY(BlueprintReadWrite)
 	AGameBoard* Board;

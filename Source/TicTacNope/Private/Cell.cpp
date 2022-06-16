@@ -12,8 +12,7 @@ ACell::ACell()
 	BoxComponent->InitBoxExtent(TriggerExtents);
 
 	BoxComponent->BodyInstance.SetCollisionProfileName("OverlapAllDynamic");
-	//BoxComponent->SetGenerateOverlapEvents(true);
-//	BoxComponent->AttachToComponent(RootComponent);
+
 
 }
 
@@ -22,7 +21,6 @@ void ACell::BeginPlay()
 {
 	Super::BeginPlay();
 
-//	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ACell::OnBeginOverlap);
 	
 }
 
@@ -31,12 +29,6 @@ void ACell::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-
-void ACell::OnBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("OnBeginOverlap Called"));
-	//UE_LOG(LogTemp, Warning, TEXT("Yo you gots a collision bruh"));
 }
 
 void ACell::ModifyState(CellStates updatedState)

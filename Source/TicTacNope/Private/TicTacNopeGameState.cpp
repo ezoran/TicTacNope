@@ -2,6 +2,7 @@
 
 
 #include "TicTacNopeGameState.h"
+#include "MonsterAIController.h"
 
 ATicTacNopeGameState::ATicTacNopeGameState()
 {
@@ -18,9 +19,7 @@ void ATicTacNopeGameState::HandleBeginPlay()
 
 	Board = GetWorld()->SpawnActor<AGameBoard>(Location, Rotation);
 	
-	//TODO: commenting out for now
-	//CurrentBoardState = BoardStates::Inactive;
-	CurrentBoardState = BoardStates::InProgress;
+	CurrentBoardState = BoardStates::Inactive;
 }
 
 void ATicTacNopeGameState::UpdateBoardState(BoardStates InState)
@@ -35,15 +34,52 @@ void ATicTacNopeGameState::UpdateBoardState(BoardStates InState)
 	//check for a victory
 	switch (CurrentBoardState)
 	{
+		case BoardStates::InProgress:
+			SetAiActivation(true);
+			break;
 		case BoardStates::MonsterVictory:
-			UE_LOG(LogTemp, Warning, TEXT("MONSTER WINS BITCH!"));
+			UE_LOG(LogTemp, Warning, TEXT("MONSTER WINS!"));
+			Board->ResetBoard();
+			SetAiActivation(false);
 			break;
 		case BoardStates::PlayerVictory:
 			UE_LOG(LogTemp, Warning, TEXT("PLAYER WINS!"));
+			Board->ResetBoard();
+			SetAiActivation(false);
 			break;
 		case BoardStates::PlayerMonsterDraw:
 			UE_LOG(LogTemp, Warning, TEXT("DRAW!"));
+			Board->ResetBoard();
+			SetAiActivation(false);
 			break;
 	}
 
+}
+
+
+void ATicTacNopeGameState::SetAiActivation(bool active)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Set AiActivation"));
+
+	TArray<AActor*> FoundActors;
+	AMonsterAIController* MonsterAi = NULL;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonsterAIController::StaticClass(), FoundActors);
+
+	for (AActor* TActor : FoundActors)
+	{
+		MonsterAi = Cast<AMonsterAIController>(TActor);
+	}
+
+	if (MonsterAi != NULL)
+	{
+		if (!active)
+		{
+			MonsterAi->Reset();
+		}
+		else
+		{
+			MonsterAi->bCanBegin = true;
+		}
+	}
 }

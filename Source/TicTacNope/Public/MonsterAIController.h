@@ -32,29 +32,20 @@ public:
 	UFUNCTION()
 	void OnPawnDetected(const TArray<AActor*>& UpdatedActors);
 
+	UFUNCTION()
+	void Reset();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = AI)
 	class UAISenseConfig_Sight* SightConfig;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float SightRadius = 1000.0f;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float LoseSightRadius = 1555.0f;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	//float SightAge = 5.0f;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float PeripheralDegrees = 130.0f;
+	UPROPERTY()
+	bool bCanBegin;
 
 private:
 
-	/* Minimax algorithm used to determine the monster's next cell to move to*/
+	/* Whenenever needed, updates MoveToCell so the AI has a next target*/
 	UFUNCTION()
 	void GetNextCell();
-
-	UFUNCTION()
-	int MiniMax(AGameBoard* board, ACell* cell, int Depth, bool IsMax);
 
 	UPROPERTY()
 	ACell* MoveToCell;
@@ -65,4 +56,15 @@ private:
 	UPROPERTY()
 	UAIPerceptionComponent* AIPerceptionComponent;
 
+	UPROPERTY()
+	float SightRadius = 500.0f;
+
+	UPROPERTY()
+	float LoseSightRadius = 550.0f;
+
+	UPROPERTY()
+	float SightAge = 5.0f;
+
+	UPROPERTY()
+	float PeripheralDegrees = 130.0f;
 };

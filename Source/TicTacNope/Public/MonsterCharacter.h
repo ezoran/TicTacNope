@@ -6,6 +6,7 @@
 #include "MonsterAnimInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "Cell.h"
+//#include "MonsterAIController.h"
 #include "PlayerCharacter.h"
 #include "TicTacNopeGameState.h"
 #include "GameFramework/Character.h"
@@ -32,6 +33,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+public:	
+	UFUNCTION()
+	void UpdateMonsterState(MonsterStates UpdatedState);
+
+	/* modified both here and from the AI Controller to manage the monster's state */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	MonsterStates CurrentState;
+
 	/* speed at which monster moves towards cells*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WalkingSpeed;
@@ -39,18 +48,6 @@ protected:
 	/* speed at which monster chase the player */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RunningSpeed;
-
-public:	
-
-	/* modified both here and from the AI Controller to manage the monster's state */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	MonsterStates CurrentState;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float FillCellTimer;
-
-	UFUNCTION()
-	void UpdateMonsterState(MonsterStates UpdatedState);
 
 private:
 

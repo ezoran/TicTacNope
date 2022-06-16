@@ -16,9 +16,6 @@ public:
 
 	AGameBoard();
 
-	UPROPERTY()
-	TArray<ACell*> CurrentCells;
-
 	/* Called when a cell has been filled*/
 	UFUNCTION()
 	void CheckBoardCompletion(ACell* lastFilled);
@@ -30,9 +27,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FetchAllCells();
 
-
 	UFUNCTION()
 	void ResetBoard();
+
+	UPROPERTY()
+	TArray<ACell*> CurrentCells;
+
+	UPROPERTY()
+	bool bBoardIsEmpty;
 
 private:
 

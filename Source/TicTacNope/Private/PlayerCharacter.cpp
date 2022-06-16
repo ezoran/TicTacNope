@@ -56,10 +56,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::OnBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	FString name = OtherActor->GetFullName();
-	UE_LOG(LogTemp, Warning, TEXT("Collided with %s"), *name);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("Character Hit Something!"));
-	
 	if (OtherActor->IsA<ACell>())
 	{
 		ACell* cell = Cast<ACell>(OtherActor);
