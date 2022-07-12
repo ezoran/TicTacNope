@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
-#include "TTNGameState.generated.h"
+#include "GameFramework/HUD.h"
+#include "TicTacNopeHUD.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TICTACNOPE_API ATTNGameState : public AGameStateBase
+class TICTACNOPE_API ATicTacNopeHUD : public AHUD
 {
 	GENERATED_BODY()
 	

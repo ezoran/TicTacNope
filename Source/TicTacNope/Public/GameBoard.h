@@ -30,7 +30,7 @@ public:
 	UFUNCTION()
 	void ResetBoard();
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TArray<ACell*> CurrentCells;
 
 	UPROPERTY()

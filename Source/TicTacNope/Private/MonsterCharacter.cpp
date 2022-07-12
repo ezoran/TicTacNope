@@ -92,7 +92,7 @@ void AMonsterCharacter::HandleClaimingCell(ACell* Cell)
 	}
 	
 	ATicTacNopeGameState* const gameState = GetWorld()->GetGameState<ATicTacNopeGameState>();
-	gameState->Board->CheckBoardCompletion(Cell);
+	gameState->CheckBoardCompletion(Cell);
 
 	//update the movement state
 	UpdateMonsterState(MonsterStates::WalkTowardsCell);
@@ -100,5 +100,14 @@ void AMonsterCharacter::HandleClaimingCell(ACell* Cell)
 
 void AMonsterCharacter::HandleAttacking(APlayerCharacter* Player)
 {
-	Player->PlayerTakeDamage(25);
+	Player->PlayerTakeDamage();
+}
+
+void AMonsterCharacter::Reset()
+{
+	UE_LOG(LogTemp, Error, TEXT("Reset Monster"));
+
+	//reset monster state and location
+	SetActorLocation(StartingPosition);
+	UpdateMonsterState(MonsterStates::WalkTowardsCell);
 }

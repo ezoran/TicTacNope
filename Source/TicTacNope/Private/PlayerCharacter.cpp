@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
+#include "TicTacNopeGameState.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -19,8 +20,6 @@ APlayerCharacter::APlayerCharacter()
 	Camera->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	Camera->bUsePawnControlRotation = true;
 
-
-	CurrentHealth = StartingHealth;
 
 	Trigger = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Trigger Capsule"));
 	Trigger->InitCapsuleSize(55.f, 96.0f);;
@@ -80,7 +79,7 @@ void APlayerCharacter::ClaimCell()
 		ClaimableCell->CurrentState = CellStates::PlayerOccupied;
 
 		ATicTacNopeGameState* const gameState = GetWorld()->GetGameState<ATicTacNopeGameState>();
-		gameState->Board->CheckBoardCompletion(ClaimableCell);
+		gameState->CheckBoardCompletion(ClaimableCell);
 	}
 }
 
@@ -115,13 +114,16 @@ void APlayerCharacter::LookUpDown(float Rate)
 	AddControllerPitchInput(Rate * GetWorld()->GetDeltaSeconds());
 }
 
-void APlayerCharacter::PlayerTakeDamage(float Damage)
+void APlayerCharacter::PlayerTakeDamage()
 {
-	CurrentHealth -= Damage;
+	ATicTacNopeGameState* const gameState = GetWorld()->GetGameState<ATicTacNopeGameState>();
+	gameState->UpdateBoardState(BoardStates::MonsterVictory);
+}
 
-	if (CurrentHealth <= 0)
-	{
-		ATicTacNopeGameState* const gameState = GetWorld()->GetGameState<ATicTacNopeGameState>();
-		gameState->UpdateBoardState(BoardStates::MonsterVictory);
-	}
+void APlayerCharacter::Reset()
+{
+	UE_LOG(LogTemp, Error, TEXT("Reset Player"));
+
+	//reset actor location
+	SetActorLocation(StartingLocation);
 }

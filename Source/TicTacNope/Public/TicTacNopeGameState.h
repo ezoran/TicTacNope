@@ -7,7 +7,11 @@
 #include "GameFramework/GameStateBase.h"
 #include "TicTacNopeGameState.generated.h"
 
+class APlayerCharacter;
+class AMonsterCharacter;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStateModifiedSignature, const BoardStates&, State);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCompletionCheckedSignature, class AGameBoard*, Board);
 
 UCLASS()
 class TICTACNOPE_API ATicTacNopeGameState : public AGameStateBase
@@ -22,13 +26,19 @@ public:
 	void UpdateBoardState(BoardStates InState);
 
 	UFUNCTION(BlueprintCallable)
-	void SetAiActivation(bool active);
+	void ResetPlayerAndMonsterState();
 
 	UPROPERTY(BlueprintReadWrite)
 	AGameBoard* Board;
 
 	UPROPERTY(BlueprintAssignable)
 	FStateModifiedSignature OnStateModified;
+
+	UPROPERTY(BlueprintAssignable)
+	FCompletionCheckedSignature OnCompletionChecked;
+	
+	UFUNCTION()
+	void CheckBoardCompletion(ACell* lastFilled);
 
 private:
 

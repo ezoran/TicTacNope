@@ -28,7 +28,6 @@ AMonsterAIController::AMonsterAIController()
 void AMonsterAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void AMonsterAIController::OnPossess(APawn* InPawn)
@@ -43,23 +42,20 @@ void AMonsterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (bCanBegin)
+	if (TargetToChase != NULL)
 	{
-		if (TargetToChase != NULL)
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("Moving to player"));
-			MoveToActor(TargetToChase, 5.0f);
-		}
-		else if (MoveToCell != NULL && MoveToCell->CurrentState == CellStates::Empty)
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("Moving to cell"));
-			MoveToActor(MoveToCell, 5.0f);
-		}
-		else if (MoveToCell == NULL || MoveToCell->CurrentState != CellStates::Empty)
-		{
-			//don't have a cell target or a player chase target, grab the next best cell
-			GetNextCell();
-		}
+		//UE_LOG(LogTemp, Warning, TEXT("Moving to player"));
+		MoveToActor(TargetToChase, 5.0f);
+	}
+	else if (MoveToCell != NULL && MoveToCell->CurrentState == CellStates::Empty)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Moving to cell"));
+		MoveToActor(MoveToCell, 5.0f);
+	}
+	else if (MoveToCell == NULL || MoveToCell->CurrentState != CellStates::Empty)
+	{
+		//don't have a cell target or a player chase target, grab the next best cell
+		GetNextCell();
 	}
 }
 
@@ -99,8 +95,11 @@ void AMonsterAIController::GetNextCell()
 			}
 		}
 
-		int selectedIndex = potentialCellIndexes[FMath::RandRange(0, potentialCellIndexes.Num() - 1)];
-		MoveToCell = b->CurrentCells[selectedIndex];
+		if (potentialCellIndexes.Num() > 0)
+		{
+			int selectedIndex = potentialCellIndexes[FMath::RandRange(0, potentialCellIndexes.Num() - 1)];
+			MoveToCell = b->CurrentCells[selectedIndex];
+		}
 	}
 	else
 	{
@@ -112,7 +111,12 @@ void AMonsterAIController::GetNextCell()
 
 void AMonsterAIController::Reset()
 {
+	UE_LOG(LogTemp, Error, TEXT("Reset Ai"));
+
+	//reset any ai related stuff when not in game
 	bCanBegin = false;
 	MoveToCell = NULL;
 	TargetToChase = NULL;
+
+
 }

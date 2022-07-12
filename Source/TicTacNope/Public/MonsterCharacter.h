@@ -37,6 +37,12 @@ public:
 	UFUNCTION()
 	void UpdateMonsterState(MonsterStates UpdatedState);
 
+	UFUNCTION()
+	void Reset();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector StartingPosition;
+
 	/* modified both here and from the AI Controller to manage the monster's state */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	MonsterStates CurrentState;
@@ -61,5 +67,7 @@ private:
 	void OnBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UCapsuleComponent* Trigger;
+
+
 
 };

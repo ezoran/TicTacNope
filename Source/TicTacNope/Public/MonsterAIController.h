@@ -38,9 +38,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = AI)
 	class UAISenseConfig_Sight* SightConfig;
 
-	UPROPERTY()
-	bool bCanBegin;
-
 private:
 
 	/* Whenenever needed, updates MoveToCell so the AI has a next target*/
@@ -55,6 +52,9 @@ private:
 
 	UPROPERTY()
 	UAIPerceptionComponent* AIPerceptionComponent;
+
+	UPROPERTY()
+	bool bCanBegin;
 
 	UPROPERTY()
 	float SightRadius = 500.0f;

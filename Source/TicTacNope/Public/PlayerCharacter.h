@@ -7,7 +7,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Cell.h"
 #include "TicTacNopeTypes.h"
-#include "TicTacNopeGameState.h"
 #include "PlayerCharacter.generated.h"
 
 
@@ -45,9 +44,11 @@ protected:
 
 	/* Left and right movement */
 	void MoveLeftRight(float Val);
-
+	
+	/* Look left and right */
 	void TurnLeftRight(float Rate);
 
+	/* Look up and down */
 	void LookUpDown(float Rate);
 
 	void ClaimCell();
@@ -57,15 +58,16 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return Camera; }
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float StartingHealth = 100.0f;
+	UFUNCTION()
+	void PlayerTakeDamage();
 
 	UFUNCTION()
-	void PlayerTakeDamage(float Damage);
+	void Reset();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector StartingLocation;
 
 private: 
-
-	float CurrentHealth;
 
 	UFUNCTION()
 	void OnBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

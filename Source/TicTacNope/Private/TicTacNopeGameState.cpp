@@ -3,7 +3,7 @@
 
 #include "TicTacNopeGameState.h"
 #include "MonsterAIController.h"
-
+#include "AIController.h"
 ATicTacNopeGameState::ATicTacNopeGameState()
 {
 
@@ -20,6 +20,9 @@ void ATicTacNopeGameState::HandleBeginPlay()
 	Board = GetWorld()->SpawnActor<AGameBoard>(Location, Rotation);
 	
 	CurrentBoardState = BoardStates::Inactive;
+
+	ResetPlayerAndMonsterState();
+
 }
 
 void ATicTacNopeGameState::UpdateBoardState(BoardStates InState)
@@ -35,51 +38,77 @@ void ATicTacNopeGameState::UpdateBoardState(BoardStates InState)
 	switch (CurrentBoardState)
 	{
 		case BoardStates::InProgress:
-			SetAiActivation(true);
 			break;
 		case BoardStates::MonsterVictory:
 			UE_LOG(LogTemp, Warning, TEXT("MONSTER WINS!"));
 			Board->ResetBoard();
-			SetAiActivation(false);
+			ResetPlayerAndMonsterState();
 			break;
 		case BoardStates::PlayerVictory:
 			UE_LOG(LogTemp, Warning, TEXT("PLAYER WINS!"));
 			Board->ResetBoard();
-			SetAiActivation(false);
+			ResetPlayerAndMonsterState();
 			break;
 		case BoardStates::PlayerMonsterDraw:
 			UE_LOG(LogTemp, Warning, TEXT("DRAW!"));
 			Board->ResetBoard();
-			SetAiActivation(false);
+			ResetPlayerAndMonsterState();
 			break;
 	}
 
 }
 
 
-void ATicTacNopeGameState::SetAiActivation(bool active)
+void ATicTacNopeGameState::ResetPlayerAndMonsterState()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Set AiActivation"));
+	APlayerCharacter* playerCharacter = NULL;
+	AMonsterCharacter* monsterCharacter = NULL;
+	AMonsterAIController* monsterAi = NULL;
 
-	TArray<AActor*> FoundActors;
-	AMonsterAIController* MonsterAi = NULL;
+	AActor* playerActor = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerCharacter::StaticClass());
+	playerCharacter = Cast<APlayerCharacter>(playerActor);
 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonsterAIController::StaticClass(), FoundActors);
+	AActor* monsterActor = UGameplayStatics::GetActorOfClass(GetWorld(), AMonsterCharacter::StaticClass());
+	monsterCharacter = Cast<AMonsterCharacter>(monsterActor);
 
-	for (AActor* TActor : FoundActors)
+	if (playerCharacter == NULL)
 	{
-		MonsterAi = Cast<AMonsterAIController>(TActor);
+		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter cast failed"));
 	}
 
-	if (MonsterAi != NULL)
+	if (monsterCharacter == NULL)
 	{
-		if (!active)
-		{
-			MonsterAi->Reset();
-		}
-		else
-		{
-			MonsterAi->bCanBegin = true;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("MonsterCharacter cast failed"));
+	}
+
+	if (monsterCharacter != NULL)
+	{
+		monsterAi = Cast<AMonsterAIController>(monsterCharacter->GetController());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MonsterAi cast failed"));
+	}
+
+
+
+	
+
+
+	playerCharacter->Reset();
+	monsterCharacter->Reset();
+	monsterAi->Reset();
+
+}
+
+void ATicTacNopeGameState::CheckBoardCompletion(ACell* lastFilled)
+{
+	Board->CheckBoardCompletion(lastFilled);
+
+	//broadcast the current board to update ui, etc
+	if (OnCompletionChecked.IsBound())
+	{
+		OnCompletionChecked.Broadcast(Board);
 	}
 }
+
